@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../utils/weather_theme.dart';
 
 class GradientBackground extends StatelessWidget {
@@ -16,9 +15,7 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOut,
+    return Container(
       decoration: BoxDecoration(
         gradient: WeatherTheme.getGradient(
           weatherMain: weatherMain,

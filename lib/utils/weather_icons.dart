@@ -1,57 +1,34 @@
+import 'package:flutter/material.dart';
+
 class WeatherIcons {
-  /// Преобразует код иконки OpenWeatherMap (например, "04d") в эмодзи
-  static String fromCode(String iconCode) {
-    // Отрезаем последний символ (d/n — день/ночь)
+  /// Возвращает Material-иконку по коду OpenWeatherMap
+  static IconData iconFromCode(String iconCode) {
     final code = iconCode.substring(0, 2);
+    final isNight = iconCode.endsWith('n');
 
-    switch (code) {
-      case '01': // clear sky
-        return iconCode.endsWith('n') ? '🌙' : '☀️';
-      case '02': // few clouds
-        return iconCode.endsWith('n') ? '☁️' : '🌤️';
-      case '03': // scattered clouds
-        return '⛅';
-      case '04': // broken clouds
-        return '☁️';
-      case '09': // shower rain
-        return '🌧️';
-      case '10': // rain
-        return iconCode.endsWith('n') ? '🌧️' : '🌦️';
-      case '11': // thunderstorm
-        return '⛈️';
-      case '13': // snow
-        return '❄️';
-      case '50': // mist
-        return '🌫️';
-      default:
-        return '🌡️';
-    }
-  }
-
-  /// Описание погоды на русском по коду
-  static String descriptionFromCode(String iconCode) {
-    final code = iconCode.substring(0, 2);
     switch (code) {
       case '01':
-        return 'Ясно';
+        return isNight ? Icons.nightlight_round : Icons.wb_sunny_outlined;
       case '02':
-        return 'Малооблачно';
+        return isNight
+            ? Icons.nights_stay_outlined
+            : Icons.wb_cloudy_outlined;
       case '03':
-        return 'Облачно';
+        return Icons.cloud_outlined;
       case '04':
-        return 'Пасмурно';
+        return Icons.cloud;
       case '09':
-        return 'Ливень';
+        return Icons.grain;
       case '10':
-        return 'Дождь';
+        return Icons.umbrella;
       case '11':
-        return 'Гроза';
+        return Icons.thunderstorm_outlined;
       case '13':
-        return 'Снег';
+        return Icons.ac_unit;
       case '50':
-        return 'Туман';
+        return Icons.blur_on;
       default:
-        return '—';
+        return Icons.thermostat;
     }
   }
 }

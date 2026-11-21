@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-
 import '../models/weather_model.dart';
 import '../services/location_service.dart';
 import '../services/storage_service.dart';
@@ -73,12 +72,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
     final cityName =
         await _api.getCityNameByCoords(pos.latitude, pos.longitude) ??
-        'Моё местоположение';
+            'Моё местоположение';
 
     await _loadByCoords(pos.latitude, pos.longitude, cityName: cityName);
   }
 
-  Future<void> _loadByCoords(double lat, double lon, {String? cityName}) async {
+  Future<void> _loadByCoords(
+    double lat,
+    double lon, {
+    String? cityName,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
@@ -183,7 +186,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           child: RefreshIndicator(
             onRefresh: _refresh,
             color: Colors.white,
-            backgroundColor: Colors.white24,
+            backgroundColor: Colors.transparent,
             child: _buildBody(),
           ),
         ),
@@ -194,17 +197,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget _buildBody() {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch, // растягиваем на всю ширину
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildSearchBar(),
-          const SizedBox(height: 16),
+          _buildHeader(),
+          const SizedBox(height: 24),
 
           if (_recentCities.isNotEmpty) ...[
             _buildRecentCities(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
 
           if (_loading)
@@ -218,84 +220,87 @@ class _WeatherScreenState extends State<WeatherScreen> {
             _buildError()
           else if (_current != null) ...[
             CurrentWeatherCard(data: _current!),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             if (_forecast != null) ...[
               HourlyForecastList(forecast: _forecast!),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               ForecastList(forecast: _forecast!),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
             ],
             _buildShareButton(),
+            const SizedBox(height: 24),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildSearchBar() {
-    return Row(
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              color: Colors.white.withValues(alpha: 0.15),
+        Text(
+          'ПОГОДА',
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: 11,
+            letterSpacing: 3,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Прогноз',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+            fontWeight: FontWeight.w300,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
               child: TextField(
                 controller: _cityController,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white, fontSize: 15),
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
-                  hintText: 'Поиск города',
-                  hintStyle: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                  hintText: 'Найти город',
+                  hintStyle:
+                      TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 8,
-                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 onSubmitted: _searchCity,
               ),
             ),
-          ),
+            InkWell(
+              onTap: _loadByGps,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Icons.my_location,
+                  color: Colors.white.withValues(alpha: 0.8),
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        _iconButton(
-          icon: Icons.my_location,
-          onTap: _loadByGps,
-          tooltip: 'Моё местоположение',
+        Divider(
+          color: Colors.white.withValues(alpha: 0.2),
+          height: 1,
         ),
       ],
     );
   }
 
-  Widget _iconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    String? tooltip,
-  }) {
-    return Tooltip(
-      message: tooltip ?? '',
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(icon, color: Colors.white),
-        ),
-      ),
-    );
-  }
-
   Widget _buildRecentCities() {
     return SizedBox(
-      height: 40,
+      height: 32,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _recentCities.length,
@@ -308,23 +313,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
               city['lon'] as double,
               cityName: city['name'] as String,
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(2),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                ),
+                borderRadius: BorderRadius.circular(2),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.history, color: Colors.white70, size: 16),
-                  const SizedBox(width: 6),
-                  Text(
-                    city['name'] as String,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+              child: Center(
+                child: Text(
+                  city['name'] as String,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.75),
+                    fontSize: 12,
+                    letterSpacing: 0.5,
                   ),
-                ],
+                ),
               ),
             ),
           );
@@ -338,21 +344,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
       padding: const EdgeInsets.symmetric(vertical: 60),
       child: Column(
         children: [
-          const Icon(Icons.error_outline, color: Colors.white, size: 56),
+          Icon(Icons.error_outline,
+              color: Colors.white.withValues(alpha: 0.7), size: 48),
           const SizedBox(height: 16),
           Text(
             _error!,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _loadByGps,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withValues(alpha: 0.2),
-              foregroundColor: Colors.white,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.8),
+              fontSize: 14,
             ),
-            child: const Text('Попробовать снова'),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton(
+            onPressed: _loadByGps,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            child: const Text('ПОПРОБОВАТЬ СНОВА'),
           ),
         ],
       ),
@@ -362,39 +375,36 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget _buildShareButton() {
     if (_current == null) return const SizedBox();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: () => _shareWeather(_current!),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.share, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Поделиться погодой',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+    return OutlinedButton(
+      onPressed: () => _shareWeather(_current!),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
         ),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.ios_share, size: 16),
+          SizedBox(width: 10),
+          Text(
+            'ПОДЕЛИТЬСЯ',
+            style: TextStyle(
+              fontSize: 12,
+              letterSpacing: 2,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Future<void> _shareWeather(CurrentWeatherResponse data) async {
-    final text =
-        'Погода в ${data.name}: '
+    final text = 'Погода в ${data.name}: '
         '${data.main.temp.round()}°, '
         '${data.weather.first.description}. '
         'Ощущается как ${data.main.feelsLike.round()}°, '
@@ -402,11 +412,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
         'ветер ${data.wind.speed.toStringAsFixed(1)} м/с ${data.wind.direction}.';
 
     try {
-      await SharePlus.instance.share(ShareParams(text: text));
+      await Share.share(text);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Не удалось поделиться: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось поделиться: $e')),
+      );
     }
   }
 }

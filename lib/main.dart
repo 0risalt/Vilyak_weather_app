@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'screens/weather_screen.dart';
 
 Future<void> main() async {
@@ -20,23 +19,19 @@ class WeatherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      // Увеличиваем все шрифты на 30% — на Windows текст слишком мелкий
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: const TextScaler.linear(1.3)),
-      child: MaterialApp(
-        title: 'Погода',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF4A90E2),
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.transparent,
+    return MaterialApp(
+      title: 'Погода',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF14161C),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF9FB6DC),
+          surface: Color(0xFF1F2230),
         ),
-        home: const WeatherScreen(),
+        useMaterial3: true,
       ),
+      home: const WeatherScreen(),
     );
   }
 }

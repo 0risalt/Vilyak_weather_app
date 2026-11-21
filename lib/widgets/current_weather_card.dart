@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../models/weather_model.dart';
 import '../utils/weather_icons.dart';
+import '../utils/weather_theme.dart';
 
 class CurrentWeatherCard extends StatelessWidget {
   final CurrentWeatherResponse data;
@@ -26,183 +24,183 @@ class CurrentWeatherCard extends StatelessWidget {
       isUtc: true,
     ).add(Duration(seconds: data.timezone));
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
             color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-              width: 1.5,
-            ),
+            width: 1,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.15),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Город и страна
+          Row(
             children: [
-              // Город
-              Row(
-                children: [
-                  const Icon(Icons.location_on, color: Colors.white, size: 24),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      data.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+              Icon(
+                Icons.location_on_outlined,
+                color: Colors.white.withValues(alpha: 0.7),
+                size: 16,
               ),
-              const SizedBox(height: 20),
-
-              // Температура + иконка
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    WeatherIcons.fromCode(weather.icon),
-                    style: const TextStyle(fontSize: 80),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${main.temp.round()}°',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 84,
-                            fontWeight: FontWeight.w200,
-                            height: 1,
-                          ),
-                        ),
-                        Text(
-                          weather.description,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontSize: 20,
-                          ),
-                        ),
-                        Text(
-                          'Ощущается как ${main.feelsLike.round()}°',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Детали
-              Row(
-                children: [
-                  Expanded(
-                    child: _DetailItem(
-                      icon: Icons.water_drop,
-                      label: 'Влажность',
-                      value: '${main.humidity}%',
-                    ),
-                  ),
-                  Expanded(
-                    child: _DetailItem(
-                      icon: Icons.speed,
-                      label: 'Давление',
-                      value: '${(main.pressure * 0.750064).round()} мм',
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _DetailItem(
-                      icon: Icons.air,
-                      label: 'Ветер',
-                      value:
-                          '${wind.speed.toStringAsFixed(1)} м/с ${wind.direction}',
-                    ),
-                  ),
-                  Expanded(
-                    child: _DetailItem(
-                      icon: Icons.wb_sunny,
-                      label: 'Восход',
-                      value: DateFormat('HH:mm').format(sunriseTime),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _DetailItem(
-                      icon: Icons.nightlight_round,
-                      label: 'Закат',
-                      value: DateFormat('HH:mm').format(sunsetTime),
-                    ),
-                  ),
-                  const Expanded(child: SizedBox()),
-                ],
+              const SizedBox(width: 6),
+              Text(
+                data.name.toUpperCase(),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 1.5,
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 24),
+
+          // Температура крупно, иконка справа
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${main.temp.round()}°',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 96,
+                        fontWeight: FontWeight.w200,
+                        height: 0.9,
+                        letterSpacing: -3,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      weather.description.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 12,
+                        letterSpacing: 1.8,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Ощущается как ${main.feelsLike.round()}°',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.55),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Icon(
+                  WeatherIcons.iconFromCode(weather.icon),
+                  size: 72,
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+
+          // Детальная строка внизу
+          Row(
+            children: [
+              Expanded(
+                child: _Stat(
+                  icon: Icons.water_drop_outlined,
+                  value: '${main.humidity}%',
+                  label: 'ВЛАЖНОСТЬ',
+                ),
+              ),
+              Expanded(
+                child: _Stat(
+                  icon: Icons.compress,
+                  value: '${(main.pressure * 0.750064).round()}',
+                  label: 'ММ РТ.СТ.',
+                ),
+              ),
+              Expanded(
+                child: _Stat(
+                  icon: Icons.air,
+                  value: '${wind.speed.toStringAsFixed(0)} ${wind.direction}',
+                  label: 'ВЕТЕР',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Восход / закат
+          Row(
+            children: [
+              Expanded(
+                child: _Stat(
+                  icon: Icons.wb_twilight,
+                  value: DateFormat('HH:mm').format(sunriseTime),
+                  label: 'ВОСХОД',
+                ),
+              ),
+              Expanded(
+                child: _Stat(
+                  icon: Icons.nightlight_outlined,
+                  value: DateFormat('HH:mm').format(sunsetTime),
+                  label: 'ЗАКАТ',
+                ),
+              ),
+              const Expanded(child: SizedBox()),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-class _DetailItem extends StatelessWidget {
+class _Stat extends StatelessWidget {
   final IconData icon;
-  final String label;
   final String value;
+  final String label;
 
-  const _DetailItem({
+  const _Stat({
     required this.icon,
-    required this.label,
     required this.value,
+    required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 22),
-        const SizedBox(width: 10),
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.6),
-                  fontSize: 13,
-                ),
-              ),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+        Icon(icon, size: 16, color: Colors.white.withValues(alpha: 0.6)),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.45),
+            fontSize: 10,
+            letterSpacing: 1.2,
           ),
         ),
       ],
